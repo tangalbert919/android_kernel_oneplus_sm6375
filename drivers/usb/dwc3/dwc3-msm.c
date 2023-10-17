@@ -4037,6 +4037,7 @@ static int dwc3_msm_id_notifier(struct notifier_block *nb,
 		return NOTIFY_DONE;
 
 	dwc = platform_get_drvdata(mdwc->dwc3);
+	dev_err(mdwc->dev, "dwc3_msm_id_notifier_EXTCON_USB_HOST:enter\n");
 
 	dbg_event(0xFF, "extcon idx", enb->idx);
 
@@ -4099,6 +4100,7 @@ static int dwc3_msm_vbus_notifier(struct notifier_block *nb,
 	}
 
 	dwc = platform_get_drvdata(mdwc->dwc3);
+	dev_err(mdwc->dev, "dwc3_msm_vbus_notifier_EXTOCN_USB:enter\n");
 
 	dbg_event(0xFF, "extcon idx", enb->idx);
 	dev_dbg(mdwc->dev, "vbus:%ld event received\n", event);
@@ -4595,7 +4597,11 @@ static void dwc3_start_stop_host(struct dwc3_msm *mdwc, bool start)
 	dwc3_ext_event_notify(mdwc);
 	dbg_event(0xFF, "flush_work", 0);
 	flush_work(&mdwc->resume_work);
+#ifdef OPLUS_FEATURE_CHG_BASIC
+	flush_workqueue(mdwc->sm_usb_wq);
+#else
 	drain_workqueue(mdwc->sm_usb_wq);
+#endif
 	if (start)
 		dbg_log_string("host mode started");
 	else
@@ -4619,7 +4625,11 @@ static void dwc3_start_stop_device(struct dwc3_msm *mdwc, bool start)
 	dwc3_ext_event_notify(mdwc);
 	dbg_event(0xFF, "flush_work", 0);
 	flush_work(&mdwc->resume_work);
+#ifdef OPLUS_FEATURE_CHG_BASIC
+	flush_workqueue(mdwc->sm_usb_wq);
+#else
 	drain_workqueue(mdwc->sm_usb_wq);
+#endif
 	if (start)
 		dbg_log_string("device mode restarted");
 	else
@@ -4655,7 +4665,11 @@ int dwc3_msm_release_ss_lane(struct device *dev, bool usb_dp_concurrent_mode)
 	dbg_event(0xFF, "ss_lane_release", 0);
 	/* flush any pending work */
 	flush_work(&mdwc->resume_work);
+#ifdef OPLUS_FEATURE_CHG_BASIC
+	flush_workqueue(mdwc->sm_usb_wq);
+#else
 	drain_workqueue(mdwc->sm_usb_wq);
+#endif
 
 	redriver_release_usb_lanes(mdwc->ss_redriver_node);
 
@@ -5737,6 +5751,13 @@ static int dwc3_msm_gadget_vbus_draw(struct dwc3_msm *mdwc, unsigned int mA)
 
 	if (mdwc->apsd_source == IIO && chg_type != POWER_SUPPLY_TYPE_USB)
 		return 0;
+
+#ifdef CONFIG_OPLUS_FEATURE_CHG_MISC
+	dev_info(mdwc->dev, "Avail curr from USB = %u, pre max_power = %u\n", mA, mdwc->max_power);
+	if (mA == 0 || mA == 2) {
+		return 0;
+	}
+#endif
 
 	/* Set max current limit in uA */
 	pval.intval = 1000 * mA;

@@ -481,6 +481,12 @@ void __init parse_early_options(char *cmdline)
 		   do_early_param);
 }
 
+bool ext_boot_with_console(void)
+{
+	return false;
+}
+EXPORT_SYMBOL(ext_boot_with_console);
+
 /* Arch code calls this early on, or if not, just before other parsing. */
 void __init parse_early_param(void)
 {
