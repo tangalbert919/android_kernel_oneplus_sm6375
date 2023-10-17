@@ -43,7 +43,7 @@
 
 
 &sdhc_1 {
-	status = "ok";
+	status = "disable";
 
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&sdc1_on>;
@@ -75,7 +75,7 @@
 	qcom,vdd-io-voltage-level = <1800000 2960000>;
 	qcom,vdd-io-current-level = <0 22000>;
 
-	cd-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+	cd-gpios = <&tlmm 94 GPIO_ACTIVE_HIGH>;
 };
 
 &ufsphy_mem {
@@ -531,4 +531,4 @@
 	};
 };
 
-#include "camera/blair-camera-sensor-qrd.dtsi"
+//#include "camera/blair-camera-sensor-qrd.dtsi"

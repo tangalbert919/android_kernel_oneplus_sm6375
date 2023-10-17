@@ -963,6 +963,32 @@
 			};
 		};
 
+		cam_sensor_rear_aux_vana: cam_sensor_rear_aux_vana {
+			mux {
+				pins = "gpio92";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio92";
+				bias-disable;
+				drive-strength = <2>;
+			};
+		};
+
+		cam_sensor_rear_vana: cam_sensor_rear_vana {
+			mux {
+				pins = "gpio89";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio89";
+				bias-disable;
+				drive-strength = <2>;
+			};
+		};
+
 		cam_sensor_rear0_reset_suspend: cam_sensor_rear0_reset_suspend {
 			/* RESET0 */
 			mux {
@@ -1223,5 +1249,91 @@
 				drive-strength = <2>;
 			};
 		};
+
+//#ifdef OPLUS_FEATURE_CHG_BASIC
+		qupv3_se9_i2c_pins: qupv3_se9_i2c_pins  {
+			qupv3_se9_i2c_active: qupv3_se9_i2c_active {
+				mux {
+					pins = "gpio25", "gpio26";
+					function = "qup13_f1";
+				};
+
+				config {
+					pins = "gpio25", "gpio26";
+						drive-strength = <2>;
+						bias-disable;
+					};
+				};
+
+			qupv3_se9_i2c_sleep: qupv3_se9_i2c_sleep {
+				mux {
+					pins = "gpio25", "gpio26";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio25", "gpio26";
+						drive-strength = <2>;
+						bias-pull-down;
+				};
+			};
+
+			qupv3_se9_i2c_pulldown: qupv3_se9_i2c_pulldown {
+				mux {
+				pins = "gpio25", "gpio26";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio25", "gpio26";
+					drive-strength = <2>;
+					bias-pull-down;
+					output-low;
+				};
+			};
+
+			qupv3_se9_i2c_pullup: qupv3_se9_i2c_pullup {
+				mux {
+					pins = "gpio25", "gpio26";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio25", "gpio26";
+					drive-strength = <2>;
+					bias-pull-up;
+					input-enable;
+				};
+			};
+		};
+
+		qupv3_se0_2uart_pins: qupv3_se0_2uart_pins {
+			qupv3_se0_2uart_active: qupv3_se0_2uart_active {
+				mux {
+					pins = "gpio2", "gpio3";
+					function = "qup00";
+				};
+
+				config {
+					pins = "gpio2", "gpio3";
+					drive-strength = <2>;
+					bias-disable;
+				};
+			};
+
+			qupv3_se0_2uart_sleep: qupv3_se0_2uart_sleep {
+				mux {
+					pins = "gpio2", "gpio3";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio2", "gpio3";
+					drive-strength = <2>;
+					bias-pull-down;
+				};
+			};
+		};
+//#endif
 	};
 };
