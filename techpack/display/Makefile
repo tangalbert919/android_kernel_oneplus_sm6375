@@ -2,6 +2,11 @@
 
 # auto-detect subdirs
 ifeq ($(CONFIG_ARCH_KONA), y)
+include $(srctree)/techpack/display/config/konadisp.conf
+endif
+
+ifeq ($(CONFIG_ARCH_KONA), y)
+LINUXINCLUDE    += -include $(srctree)/techpack/display/config/konadispconf.h
      ifeq ($(CONFIG_QGKI), y)
 		include $(srctree)/techpack/display/config/konadisp.conf
 LINUXINCLUDE    += -include $(srctree)/techpack/display/config/konadispconf.h
@@ -61,6 +66,9 @@ LINUXINCLUDE    += -include $(srctree)/techpack/display/config/monacodispconf.h
 endif
 
 obj-$(CONFIG_DRM_MSM) += msm/
+#ifdef OPLUS_BUG_STABILITY
+#obj-$(CONFIG_DRM_OPLUS) += oplus/
+#endif /* OPLUS_BUG_STABILITY */
 
 ifeq ($(CONFIG_ARCH_SDXLEMUR), y)
 include $(srctree)/techpack/display/config/sdxlemurdisp.conf

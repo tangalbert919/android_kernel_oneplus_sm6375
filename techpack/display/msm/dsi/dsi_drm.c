@@ -21,6 +21,8 @@
 #define DEFAULT_PANEL_JITTER_ARRAY_SIZE		2
 #define DEFAULT_PANEL_PREFILL_LINES	25
 
+extern int skip_backlight;
+
 static struct dsi_display_mode_priv_info default_priv_info = {
 	.panel_jitter_numer = DEFAULT_PANEL_JITTER_NUMERATOR,
 	.panel_jitter_denom = DEFAULT_PANEL_JITTER_DENOMINATOR,
@@ -241,7 +243,7 @@ static void dsi_bridge_enable(struct drm_bridge *bridge)
 		return;
 	}
 	display = c_bridge->display;
-
+	skip_backlight = 2;
 	rc = dsi_display_post_enable(display);
 	if (rc)
 		DSI_ERR("[%d] DSI display post enabled failed, rc=%d\n",
@@ -282,7 +284,7 @@ static void dsi_bridge_disable(struct drm_bridge *bridge)
 
 		sde_connector_helper_bridge_disable(display->drm_conn);
 	}
-
+	skip_backlight = -1;
 	rc = dsi_display_pre_disable(c_bridge->display);
 	if (rc) {
 		DSI_ERR("[%d] DSI display pre disable failed, rc=%d\n",
@@ -446,6 +448,20 @@ static bool dsi_bridge_mode_fixup(struct drm_bridge *bridge,
 				dsi_mode.panel_mode);
 		}
 	}
+#ifdef OPLUS_BUG_STABILITY
+	if (display->is_cont_splash_enabled)
+		dsi_mode.dsi_mode_flags &= ~DSI_MODE_FLAG_DMS;
+
+	if (display->panel && display->panel->oplus_priv.is_aod_ramless) {
+		if (crtc_state->active_changed && (dsi_mode.dsi_mode_flags & DSI_MODE_FLAG_DYN_CLK)) {
+			DSI_ERR("dyn clk changed when active_changed, WA to skip dyn clk change\n");
+			dsi_mode.dsi_mode_flags &= ~DSI_MODE_FLAG_DYN_CLK;
+		}
+
+		if (dsi_mode.dsi_mode_flags & DSI_MODE_FLAG_DMS)
+			dsi_mode.dsi_mode_flags |= DSI_MODE_FLAG_SEAMLESS;
+	}
+	#endif /* OPLUS_BUG_STABILITY */
 
 	/* Reject seamless transition when active changed */
 	if (crtc_state->active_changed &&
@@ -609,6 +625,10 @@ static const struct drm_bridge_funcs dsi_bridge_ops = {
 	.mode_set     = dsi_bridge_mode_set,
 };
 
+#ifdef OPLUS_BUG_STABILITY
+extern void oplus_panel_ramless_add_keystr(struct sde_kms_info *info);
+#endif
+
 int dsi_conn_set_info_blob(struct drm_connector *connector,
 		void *info, void *display, struct msm_mode_info *mode_info)
 {
@@ -749,6 +769,10 @@ int dsi_conn_set_info_blob(struct drm_connector *connector,
 	bpp = dsi_ctrl_pixel_format_to_bpp(fmt);
 
 	sde_kms_info_add_keyint(info, "bit_depth", bpp);
+
+#ifdef OPLUS_BUG_STABILITY
+	oplus_panel_ramless_add_keystr(info);
+#endif
 
 end:
 	return 0;
