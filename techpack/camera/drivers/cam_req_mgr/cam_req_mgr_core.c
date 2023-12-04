@@ -304,7 +304,7 @@ static int __cam_req_mgr_notify_frame_skip(
 		frame_skip.report_if_bubble = 0;
 
 		CAM_DBG(CAM_REQ,
-			"Notify_frame_skip: pd %d req_id %lld",
+			"Notify_frame_skip: pd %d req_id %ld",
 			link->link_hdl, pd, apply_data[pd].req_id);
 		if ((dev->ops) && (dev->ops->notify_frame_skip))
 			dev->ops->notify_frame_skip(&frame_skip);
@@ -851,7 +851,13 @@ static int __cam_req_mgr_send_req(struct cam_req_mgr_core_link *link,
 				idx, dev->dev_info.name);
 			continue;
 		}
-
+#if 0
+		if (slot->ops.apply_at_eof && slot->ops.skip_next_frame) {
+			CAM_ERR(CAM_CRM,
+				"Both EOF and SOF trigger is not supported");
+			return -EINVAL;
+		}
+#endif
 		if (dev->dev_hdl != slot->ops.dev_hdl) {
 			CAM_DBG(CAM_CRM,
 				"Dev_hdl : %d Not matched:: Expected dev_hdl: %d",
@@ -2787,7 +2793,21 @@ int cam_req_mgr_process_add_req(void *priv, void *data)
 			device->dev_info.name);
 	}
 
-	if (add_req->trigger_eof) {
+	if ((add_req->skip_at_eof & 0xFF) > slot->inject_delay_at_eof) {
+		slot->inject_delay_at_eof = (add_req->skip_at_eof & 0xFF);
+		CAM_DBG(CAM_CRM,
+			"Req_id %llu injecting delay %llu frame at EOF by %s",
+			add_req->req_id,
+			slot->inject_delay_at_eof,
+			device->dev_info.name);
+	}
+
+	/* Used when Precise Flash is enabled */
+#if 0
+	if ((add_req->trigger_eof) && (!add_req->skip_before_applying)) {
+#else
+	if ((add_req->trigger_eof) && (!add_req->skip_at_sof)) {
+#endif
 		slot->ops.apply_at_eof = true;
 		slot->ops.dev_hdl = add_req->dev_hdl;
 		CAM_DBG(CAM_REQ,

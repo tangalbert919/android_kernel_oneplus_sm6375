@@ -3735,7 +3735,17 @@ int cam_ife_csid_release(void *hw_priv,
 			csid_hw->hw_intf->hw_idx,
 			res->res_type, res->res_id,
 			res->res_state);
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+		/*wangyongwu@camera copy from 7250 modify to fix case 4329446 for monkey*/
+		if (res->res_type != CAM_ISP_RESOURCE_CID) {
+			goto end;
+		} else {
+			cid_data = (struct cam_ife_csid_cid_data    *) res->res_priv;
+			CAM_WARN(CAM_ISP, "cid data cnt %d", cid_data->cnt);
+		}
+#else
 		goto end;
+#endif
 	}
 
 	CAM_DBG(CAM_ISP, "CSID:%d res type :%d Resource id:%d",

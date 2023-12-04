@@ -170,7 +170,7 @@ camera-$(CONFIG_SPECTRA_SENSOR) += \
 	cam_sensor_module/cam_sensor_io/cam_sensor_qup_i2c.o \
 	cam_sensor_module/cam_sensor_io/cam_sensor_spi.o \
 	cam_sensor_module/cam_sensor_utils/cam_sensor_util.o \
-	cam_sensor_module/cam_res_mgr/cam_res_mgr.o
+	cam_sensor_module/cam_res_mgr/cam_res_mgr.o \
 
 camera-$(CONFIG_LEDS_QPNP_FLASH_V2) += \
 	cam_sensor_module/cam_flash/cam_flash_dev.o \
@@ -219,6 +219,12 @@ camera-$(CONFIG_SPECTRA_TFE) += \
 	cam_isp/isp_hw_mgr/isp_hw/tfe_csid_hw/cam_tfe_csid530.o \
 	cam_isp/isp_hw_mgr/cam_tfe_hw_mgr.o
 
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+camera-$(CONFIG_SPECTRA_SENSOR) += \
+	oplus/cam_sensor_module/cam_sensor/oplus_cam_sensor_core.o\
+	oplus/cam_sensor_module/cam_sensor/oplus_cam_sensor_dev.o \
+	oplus/cam_sensor_module/cam_flash/oplus_cam_flash_dev.o
+#endif /*OPLUS_FEATURE_CAMERA_COMMON*/
 
 camera-y += camera_main.o
 
