@@ -5,7 +5,7 @@
 
 #include <linux/module.h>
 #include <linux/proc_fs.h>
-#include "device_info.h"
+#include <soc/oplus/device_info.h>
 #include <soc/oplus/system/oplus_project.h>
 #include <linux/slab.h>
 #include <linux/seq_file.h>

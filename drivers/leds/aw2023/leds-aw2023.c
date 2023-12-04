@@ -446,7 +446,7 @@ static void aw2023_brightness(struct aw2023_led *led)
 		}
 	}
 
-	oplus_misc_healthinfo(led->id, state, led->cdev.brightness);
+	//oplus_misc_healthinfo(led->id, state, led->cdev.brightness);
 	AW2023_DEBUG("%s:  brightness[%d]=%x led_mode[%d]=%x  enable=%d\n",__func__,led->id,led->cdev.brightness,led->id,led->pdata->led_mode,enable);
 	mutex_unlock(&led->pdata->led->lock);
 }
