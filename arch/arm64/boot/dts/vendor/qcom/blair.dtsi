@@ -265,7 +265,7 @@
 		compatible = "android,firmware";
 		vbmeta {
 			compatible = "android,vbmeta";
-			parts = "vbmeta,boot,system,vendor,dtbo";
+			parts = "vbmeta,boot,system,vendor,dtbo,vendor_boot";
 		};
 
 		fstab {
@@ -2289,6 +2289,9 @@
 				qcom,intents = <0x800  5
 						0x2000 3
 						0x4400 2>;
+
+				/* Qcom case-06236027 add for qrtr wakeup-source */
+				qcom,non-wake-svc = <0x190>;
 			};
 
 			qcom,adsp_glink_ssr {
@@ -2587,7 +2590,7 @@
 		phy-names = "ufsphy";
 		#reset-cells = <1>;
 		limit-phy-submode = <0>;
-		spm-level = <5>;
+		spm-level = <3>;
 		rpm-level = <3>;
 
 		lanes-per-direction = <1>;
@@ -3781,6 +3784,7 @@
 		qcom,wlan-msa-fixed-region = <&pil_wlan_mem>;
 		qcom,iommu-dma-addr-pool = <0xa0000000 0x10000000>;
 		qcom,iommu-geometry = <0xa0000000 0x10010000>;
+		qcom,psf-supported;
 		vdd-cx-mx-supply = <&L2E>;
 		vdd-1.8-xo-supply = <&L16A>;
 		vdd-1.3-rfa-supply = <&L2A>;
